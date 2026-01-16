@@ -217,25 +217,18 @@ describe('ProjectTabBar', () => {
       expect(mockOnProjectClose).toHaveBeenCalledWith('proj-1');
     });
 
-    it('should allow closing when there are multiple projects', () => {
-      const projects = [
+    it('should allow closing any project regardless of project count', () => {
+      const singleProject = [
+        createTestProject({ id: 'proj-only', name: 'Only Project' })
+      ];
+      const multipleProjects = [
         createTestProject({ id: 'proj-1', name: 'Project 1' }),
         createTestProject({ id: 'proj-2', name: 'Project 2' })
       ];
 
-      // canClose = projects.length > 1
-      const canClose = projects.length > 1;
-      expect(canClose).toBe(true);
-    });
-
-    it('should not allow closing when there is only one project', () => {
-      const projects = [
-        createTestProject({ id: 'proj-only', name: 'Only Project' })
-      ];
-
-      // canClose = projects.length > 1
-      const canClose = projects.length > 1;
-      expect(canClose).toBe(false);
+      // Close button is always available
+      expect(singleProject.length).toBe(1);
+      expect(multipleProjects.length).toBe(2);
     });
   });
 
@@ -398,7 +391,6 @@ describe('ProjectTabBar', () => {
       const tabProps = {
         project: projects[0],
         isActive: activeProjectId === projects[0].id,
-        canClose: projects.length > 1,
         tabIndex: 0,
         onSelect: expect.any(Function),
         onClose: expect.any(Function)
@@ -406,23 +398,6 @@ describe('ProjectTabBar', () => {
 
       expect(tabProps.project.id).toBe('proj-1');
       expect(tabProps.isActive).toBe(true);
-      expect(tabProps.canClose).toBe(false); // Only one project
-    });
-
-    it('should pass canClose correctly based on project count', () => {
-      const singleProject = [createTestProject({ id: 'proj-single' })];
-      const multipleProjects = [
-        createTestProject({ id: 'proj-a' }),
-        createTestProject({ id: 'proj-b' })
-      ];
-
-      // For single project
-      const canCloseSingle = singleProject.length > 1;
-      expect(canCloseSingle).toBe(false);
-
-      // For multiple projects
-      const canCloseMultiple = multipleProjects.length > 1;
-      expect(canCloseMultiple).toBe(true);
     });
 
     it('should pass correct onSelect function that calls onProjectSelect with project ID', () => {
@@ -755,7 +730,6 @@ describe('ProjectTabBar', () => {
       const tabProps = {
         project: projects[0],
         isActive: activeProjectId === projects[0].id,
-        canClose: projects.length > 1,
         tabIndex: 0,
         onSelect: expect.any(Function),
         onClose: expect.any(Function),
@@ -785,7 +759,6 @@ describe('ProjectTabBar', () => {
       const inactiveTabProps = {
         project: projects[0],
         isActive: activeProjectId === projects[0].id, // false
-        canClose: projects.length > 1,
         tabIndex: 0,
         onSelect: expect.any(Function),
         onClose: expect.any(Function),
