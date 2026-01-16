@@ -9,7 +9,6 @@ import type { Project } from '../../shared/types';
 interface SortableProjectTabProps {
   project: Project;
   isActive: boolean;
-  canClose: boolean;
   tabIndex: number;
   onSelect: () => void;
   onClose: (e: React.MouseEvent) => void;
@@ -24,7 +23,6 @@ const modKey = isMac ? '⌘' : 'Ctrl+';
 export function SortableProjectTab({
   project,
   isActive,
-  canClose,
   tabIndex,
   onSelect,
   onClose,
@@ -145,36 +143,34 @@ export function SortableProjectTab({
         </div>
       )}
 
-      {canClose && (
-        <Tooltip delayDuration={200}>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              className={cn(
-                'h-5 w-5 sm:h-6 sm:w-6 p-0 mr-0.5 sm:mr-1',
-                'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
-                'transition-opacity duration-200 rounded flex-shrink-0',
-                'hover:bg-destructive hover:text-destructive-foreground',
-                'flex items-center justify-center',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
-                isActive && 'opacity-100'
-              )}
-              onClick={onClose}
-              aria-label={t('projectTab.closeTabAriaLabel')}
-            >
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="flex items-center gap-2">
-            <span>{t('projectTab.closeTab')}</span>
-            <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded border border-border font-mono">
-              {closeShortcut}
-            </kbd>
-          </TooltipContent>
-        </Tooltip>
-      )}
+      <Tooltip delayDuration={200}>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              'h-5 w-5 sm:h-6 sm:w-6 p-0 mr-0.5 sm:mr-1',
+              'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
+              'transition-opacity duration-200 rounded flex-shrink-0',
+              'hover:bg-destructive hover:text-destructive-foreground',
+              'flex items-center justify-center',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+              isActive && 'opacity-100'
+            )}
+            onClick={onClose}
+            aria-label={t('projectTab.closeTabAriaLabel')}
+          >
+            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="flex items-center gap-2">
+          <span>{t('projectTab.closeTab')}</span>
+          <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded border border-border font-mono">
+            {closeShortcut}
+          </kbd>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }

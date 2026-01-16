@@ -53,7 +53,6 @@ describe('SortableProjectTab', () => {
       const activeTabProps = {
         project,
         isActive: true,
-        canClose: true,
         tabIndex: 0,
         onSelect: mockOnSelect,
         onClose: mockOnClose,
@@ -74,7 +73,6 @@ describe('SortableProjectTab', () => {
       const inactiveTabProps = {
         project,
         isActive: false,
-        canClose: true,
         tabIndex: 0,
         onSelect: mockOnSelect,
         onClose: mockOnClose,
@@ -323,33 +321,18 @@ describe('SortableProjectTab', () => {
     });
   });
 
-  describe('Close Button Conditional Rendering', () => {
-    it('should render close button when canClose is true', () => {
+  describe('Close Button Rendering', () => {
+    it('should always render close button', () => {
       const project = createTestProject({ id: 'proj-1' });
 
       const props = {
         project,
         isActive: true,
-        canClose: true,
         onClose: mockOnClose
       };
 
-      // Close button renders when canClose is true
-      expect(props.canClose).toBe(true);
-    });
-
-    it('should NOT render close button when canClose is false', () => {
-      const project = createTestProject({ id: 'proj-1' });
-
-      const props = {
-        project,
-        isActive: true,
-        canClose: false,
-        onClose: mockOnClose
-      };
-
-      // Close button should not render when canClose is false
-      expect(props.canClose).toBe(false);
+      // Close button always renders
+      expect(props.onClose).toBeDefined();
     });
 
     it('should call onClose when close button is clicked', () => {
@@ -369,8 +352,7 @@ describe('SortableProjectTab', () => {
 
       const props = {
         project,
-        isActive: true,
-        canClose: true
+        isActive: true
       };
 
       // From component: close button has 'opacity-100' when isActive
@@ -383,13 +365,11 @@ describe('SortableProjectTab', () => {
 
       const props = {
         project,
-        isActive: false,
-        canClose: true
+        isActive: false
       };
 
       // From component: close button has 'opacity-0 group-hover:opacity-100' for inactive
       expect(props.isActive).toBe(false);
-      expect(props.canClose).toBe(true);
     });
   });
 
@@ -400,7 +380,6 @@ describe('SortableProjectTab', () => {
       const props = {
         project,
         isActive: true,
-        canClose: true,
         tabIndex: 0,
         onSelect: mockOnSelect,
         onClose: mockOnClose,
@@ -424,7 +403,6 @@ describe('SortableProjectTab', () => {
       const props = {
         project,
         isActive: true,
-        canClose: true,
         tabIndex: 0,
         onSelect: mockOnSelect,
         onClose: mockOnClose,
@@ -447,7 +425,6 @@ describe('SortableProjectTab', () => {
       const props = {
         project,
         isActive: true,
-        canClose: true,
         tabIndex: 0,
         onSelect: mockOnSelect,
         onClose: mockOnClose,
@@ -470,7 +447,6 @@ describe('SortableProjectTab', () => {
       const props = {
         project,
         isActive: false,
-        canClose: true,
         tabIndex: 0,
         onSelect: mockOnSelect,
         onClose: mockOnClose,
@@ -501,7 +477,6 @@ describe('SortableProjectTab', () => {
       interface SortableProjectTabProps {
         project: Project;
         isActive: boolean;
-        canClose: boolean;
         tabIndex: number;
         onSelect: () => void;
         onClose: (e: React.MouseEvent) => void;
@@ -515,7 +490,6 @@ describe('SortableProjectTab', () => {
       const validProps: SortableProjectTabProps = {
         project,
         isActive: true,
-        canClose: true,
         tabIndex: 0,
         onSelect: mockOnSelect,
         onClose: mockOnClose
@@ -523,7 +497,6 @@ describe('SortableProjectTab', () => {
 
       expect(validProps.project).toBeDefined();
       expect(validProps.isActive).toBeDefined();
-      expect(validProps.canClose).toBeDefined();
       expect(validProps.tabIndex).toBeDefined();
       expect(validProps.onSelect).toBeDefined();
       expect(validProps.onClose).toBeDefined();
