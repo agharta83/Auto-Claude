@@ -524,6 +524,69 @@
       }
     }
   },
+  "sourceControlProject": {
+    "detecting": "Détection du remote git...",
+    "detectingHint": "Recherche des remotes configurés dans ce projet",
+    "noRemote": {
+      "title": "Aucun remote Git détecté",
+      "description": "Ce projet n'a pas de remote git configuré. Ajoutez-en un pour activer l'intégration du contrôle de source.",
+      "retry": "Réessayer la détection",
+      "manual": "Configurer manuellement"
+    },
+    "error": {
+      "title": "Erreur de détection",
+      "retry": "Réessayer"
+    },
+    "errors": {
+      "detectionFailed": "Échec de la détection du remote git",
+      "branchesFailed": "Échec du chargement des branches"
+    },
+    "detected": "Détecté",
+    "disconnect": "Déconnecter",
+    "notConfigured": "Contrôle de source non configuré",
+    "notConfiguredHint": "Cliquez sur détecter pour trouver le remote git automatiquement",
+    "detect": "Détecter le remote",
+    "manual": {
+      "title": "Configuration manuelle",
+      "cancel": "Annuler",
+      "provider": "Fournisseur",
+      "owner": "Propriétaire",
+      "group": "Groupe/Namespace",
+      "repo": "Dépôt",
+      "project": "Projet",
+      "save": "Enregistrer"
+    },
+    "token": {
+      "checking": "Vérification de l'authentification...",
+      "connectedAs": "Connecté en tant que {{username}}",
+      "connected": "Token configuré",
+      "missing": {
+        "title": "Token {{provider}} manquant",
+        "description": "Configurez un token {{provider}} dans les paramètres globaux pour activer les fonctionnalités de synchronisation.",
+        "configure": "Configurer {{provider}}"
+      }
+    },
+    "sync": {
+      "title": "Options de synchronisation",
+      "description": "Choisissez les fonctionnalités à synchroniser depuis votre dépôt",
+      "issues": "Synchroniser les issues",
+      "issuesDescription": "Importer et suivre les issues de ce dépôt",
+      "pullRequests": "Synchroniser les Pull Requests",
+      "pullRequestsDescription": "Suivre les pull requests et leur statut",
+      "mergeRequests": "Synchroniser les Merge Requests",
+      "mergeRequestsDescription": "Suivre les merge requests et leur statut"
+    },
+    "branch": {
+      "title": "Branche par défaut",
+      "description": "Branche utilisée pour les PRs et le suivi des issues",
+      "loading": "Chargement des branches...",
+      "autoDetect": "Détection automatique (par défaut)",
+      "search": "Rechercher des branches...",
+      "noMatch": "Aucune branche ne correspond à votre recherche",
+      "noBranches": "Aucune branche trouvée",
+      "selectedNote": "Utilisation de {{branch}} comme branche par défaut"
+    }
+  },
   "debug": {
     "title": "Debug & Logs",
     "description": "Accédez aux logs et informations de débogage pour le dépannage",

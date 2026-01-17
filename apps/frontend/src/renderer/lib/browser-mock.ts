@@ -339,7 +339,14 @@ const browserMockAPI: ElectronAPI = {
   addGitLabInstance: async () => ({ success: false, error: 'Not available in browser mode' }),
   updateGitLabInstance: async () => ({ success: false, error: 'Not available in browser mode' }),
   removeGitLabInstance: async () => ({ success: false, error: 'Not available in browser mode' }),
-  getTokenForProject: async () => ({ success: true, data: { provider: 'none' as const, error: 'Not available in browser mode' } })
+  getTokenForProject: async () => ({ success: true, data: { provider: 'none' as const, error: 'Not available in browser mode' } }),
+
+  // Git operations (US#40-47)
+  getGitBranches: async () => ({ success: true, data: ['main', 'develop'] }),
+  getCurrentGitBranch: async () => ({ success: true, data: 'main' }),
+  detectMainBranch: async () => ({ success: true, data: 'main' }),
+  detectGitRemote: async () => ({ success: true, data: null }),
+  checkGitStatus: async () => ({ success: true, data: { isGitRepo: true, hasCommits: true, currentBranch: 'main' } })
 };
 
 /**

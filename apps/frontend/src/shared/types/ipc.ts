@@ -24,7 +24,8 @@ import type {
   CustomMcpServer,
   McpHealthCheckResult,
   McpTestConnectionResult,
-  ProjectSourceControl
+  ProjectSourceControl,
+  DetectedRemote
 } from './project';
 import type { GitLabInstance } from './settings';
 import type {
@@ -721,6 +722,7 @@ export interface ElectronAPI {
   getGitBranches: (projectPath: string) => Promise<IPCResult<string[]>>;
   getCurrentGitBranch: (projectPath: string) => Promise<IPCResult<string | null>>;
   detectMainBranch: (projectPath: string) => Promise<IPCResult<string | null>>;
+  detectGitRemote: (projectPath: string) => Promise<IPCResult<DetectedRemote | null>>;
   checkGitStatus: (projectPath: string) => Promise<IPCResult<GitStatus>>;
   initializeGit: (projectPath: string) => Promise<IPCResult<InitializationResult>>;
 

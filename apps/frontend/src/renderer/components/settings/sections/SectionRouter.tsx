@@ -4,8 +4,7 @@ import { SettingsSection } from '../SettingsSection';
 import { GeneralSettings } from '../../project-settings/GeneralSettings';
 import { SecuritySettings } from '../../project-settings/SecuritySettings';
 import { LinearIntegration } from '../integrations/LinearIntegration';
-import { GitHubIntegration } from '../integrations/GitHubIntegration';
-import { GitLabIntegration } from '../integrations/GitLabIntegration';
+import { SourceControlProjectSettings } from '../integrations/SourceControlProjectSettings';
 import { InitializationGuard } from '../common/InitializationGuard';
 import type { ProjectSettingsSection } from '../ProjectSettingsContent';
 
@@ -118,52 +117,24 @@ export function SectionRouter({
       );
 
     case 'github':
-      return (
-        <SettingsSection
-          title={t('projectSections.github.integrationTitle')}
-          description={t('projectSections.github.integrationDescription')}
-        >
-          <InitializationGuard
-            initialized={!!project.autoBuildPath}
-            title={t('projectSections.github.integrationTitle')}
-            description={t('projectSections.github.syncDescription')}
-          >
-            <GitHubIntegration
-              envConfig={envConfig}
-              updateEnvConfig={updateEnvConfig}
-              showGitHubToken={showGitHubToken}
-              setShowGitHubToken={setShowGitHubToken}
-              gitHubConnectionStatus={gitHubConnectionStatus}
-              isCheckingGitHub={isCheckingGitHub}
-              projectPath={project.path}
-              settings={settings}
-              setSettings={setSettings}
-            />
-          </InitializationGuard>
-        </SettingsSection>
-      );
-
     case 'gitlab':
       return (
         <SettingsSection
-          title={t('projectSections.gitlab.integrationTitle')}
-          description={t('projectSections.gitlab.integrationDescription')}
+          title={t(`projectSections.${activeSection}.integrationTitle`)}
+          description={t(`projectSections.${activeSection}.integrationDescription`)}
         >
           <InitializationGuard
             initialized={!!project.autoBuildPath}
-            title={t('projectSections.gitlab.integrationTitle')}
-            description={t('projectSections.gitlab.syncDescription')}
+            title={t(`projectSections.${activeSection}.integrationTitle`)}
+            description={t(`projectSections.${activeSection}.syncDescription`)}
           >
-            <GitLabIntegration
+            <SourceControlProjectSettings
               envConfig={envConfig}
               updateEnvConfig={updateEnvConfig}
-              showGitLabToken={showGitLabToken}
-              setShowGitLabToken={setShowGitLabToken}
-              gitLabConnectionStatus={gitLabConnectionStatus}
-              isCheckingGitLab={isCheckingGitLab}
               projectPath={project.path}
               settings={settings}
               setSettings={setSettings}
+              isOpen={true}
             />
           </InitializationGuard>
         </SettingsSection>

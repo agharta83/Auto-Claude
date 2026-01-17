@@ -524,6 +524,69 @@
       }
     }
   },
+  "sourceControlProject": {
+    "detecting": "Detecting git remote...",
+    "detectingHint": "Looking for configured remotes in this project",
+    "noRemote": {
+      "title": "No Git Remote Detected",
+      "description": "This project doesn't have a configured git remote. Add one to enable source control integration.",
+      "retry": "Retry Detection",
+      "manual": "Configure Manually"
+    },
+    "error": {
+      "title": "Detection Error",
+      "retry": "Retry"
+    },
+    "errors": {
+      "detectionFailed": "Failed to detect git remote",
+      "branchesFailed": "Failed to load branches"
+    },
+    "detected": "Detected",
+    "disconnect": "Disconnect",
+    "notConfigured": "Source Control Not Configured",
+    "notConfiguredHint": "Click detect to find git remote automatically",
+    "detect": "Detect Remote",
+    "manual": {
+      "title": "Manual Configuration",
+      "cancel": "Cancel",
+      "provider": "Provider",
+      "owner": "Owner",
+      "group": "Group/Namespace",
+      "repo": "Repository",
+      "project": "Project",
+      "save": "Save"
+    },
+    "token": {
+      "checking": "Checking authentication...",
+      "connectedAs": "Connected as {{username}}",
+      "connected": "Token configured",
+      "missing": {
+        "title": "{{provider}} Token Missing",
+        "description": "Configure a {{provider}} token in global settings to enable sync features.",
+        "configure": "Configure {{provider}}"
+      }
+    },
+    "sync": {
+      "title": "Sync Options",
+      "description": "Choose which features to sync from your repository",
+      "issues": "Sync Issues",
+      "issuesDescription": "Import and track issues from this repository",
+      "pullRequests": "Sync Pull Requests",
+      "pullRequestsDescription": "Track pull requests and their status",
+      "mergeRequests": "Sync Merge Requests",
+      "mergeRequestsDescription": "Track merge requests and their status"
+    },
+    "branch": {
+      "title": "Default Branch",
+      "description": "Branch used for PRs and issue tracking",
+      "loading": "Loading branches...",
+      "autoDetect": "Auto-detect (default)",
+      "search": "Search branches...",
+      "noMatch": "No branches match your search",
+      "noBranches": "No branches found",
+      "selectedNote": "Using {{branch}} as the default branch"
+    }
+  },
   "debug": {
     "title": "Debug & Logs",
     "description": "Access logs and debug information for troubleshooting",
