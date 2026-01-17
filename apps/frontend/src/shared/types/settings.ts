@@ -6,6 +6,44 @@ import type { NotificationSettings, GraphitiEmbeddingProvider } from './project'
 import type { ChangelogFormat, ChangelogAudience, ChangelogEmojiLevel } from './changelog';
 import type { SupportedLanguage } from '../constants/i18n';
 
+// ============================================
+// Source Control Global Configuration Types
+// ============================================
+
+/**
+ * Global GitHub configuration (app-level, not project-specific)
+ * Token is shared across all projects that use GitHub
+ */
+export interface GitHubGlobalConfig {
+  /** GitHub personal access token or OAuth token */
+  token?: string;
+  /** How the token was obtained */
+  authMethod: 'oauth' | 'pat';
+  /** GitHub username (populated after successful authentication) */
+  username?: string;
+}
+
+/**
+ * GitLab instance configuration for multi-instance support
+ * Allows configuring multiple GitLab instances (gitlab.com + self-hosted)
+ */
+export interface GitLabInstance {
+  /** Unique identifier for this instance */
+  id: string;
+  /** Display name (e.g., "GitLab.com", "Company GitLab") */
+  name: string;
+  /** Base URL of the GitLab instance (e.g., "https://gitlab.com") */
+  url: string;
+  /** Personal access token for this instance */
+  token?: string;
+  /** How the token was obtained */
+  authMethod: 'oauth' | 'pat';
+  /** GitLab username (populated after successful authentication) */
+  username?: string;
+  /** Whether this is the default instance for new projects */
+  isDefault?: boolean;
+}
+
 // Color theme types for multi-theme support
 export type ColorTheme = 'default' | 'dusk' | 'lime' | 'ocean' | 'retro' | 'neo' | 'forest';
 
@@ -236,6 +274,11 @@ export interface AppSettings {
   globalGoogleApiKey?: string;
   globalGroqApiKey?: string;
   globalOpenRouterApiKey?: string;
+  // Source Control Global Configuration (tokens shared across projects)
+  /** Global GitHub configuration (token, auth method, username) */
+  github?: GitHubGlobalConfig;
+  /** GitLab instances configuration (supports multiple instances) */
+  gitlabInstances?: GitLabInstance[];
   // Graphiti LLM provider settings (legacy)
   graphitiLlmProvider?: 'openai' | 'anthropic' | 'google' | 'groq' | 'ollama';
   ollamaBaseUrl?: string;

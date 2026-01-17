@@ -286,6 +286,42 @@ export interface ProjectContextData {
   error?: string;
 }
 
+// ============================================
+// Source Control Types (Project-level)
+// ============================================
+
+/**
+ * Source control provider type
+ */
+export type SourceControlProvider = 'github' | 'gitlab' | 'none';
+
+/**
+ * Project-level source control configuration
+ * Auto-detected from git remote, with user toggles for sync options
+ */
+export interface ProjectSourceControl {
+  /** Detected provider (github, gitlab, or none) */
+  provider: SourceControlProvider;
+  /** Full URL of the detected remote */
+  detectedRemoteUrl?: string;
+  /** Repository owner (GitHub) or group path (GitLab) */
+  owner?: string;
+  /** Repository or project name */
+  repo?: string;
+  /** Reference to GitLabInstance.id if provider is gitlab */
+  gitlabInstanceId?: string;
+  /** Enable issue synchronization */
+  syncIssues: boolean;
+  /** Enable PR/MR synchronization */
+  syncPullRequests: boolean;
+  /** Override branch for sync (defaults to repo default branch) */
+  branch?: string;
+  /** Timestamp of last successful sync */
+  lastSyncAt?: string;
+  /** Timestamp when remote was auto-detected */
+  autoDetectedAt?: string;
+}
+
 // Environment Configuration for project .env files
 export interface ProjectEnvConfig {
   // Claude Authentication
@@ -304,21 +340,48 @@ export interface ProjectEnvConfig {
   linearProjectId?: string;
   linearRealtimeSync?: boolean; // Enable real-time sync of new Linear tasks
 
-  // GitHub Integration
+  // ============================================
+  // Source Control (New unified configuration)
+  // ============================================
+
+  /**
+   * Unified source control configuration (auto-detected + user preferences)
+   * Replaces individual GitHub/GitLab fields below
+   */
+  sourceControl?: ProjectSourceControl;
+
+  // ============================================
+  // GitHub Integration (DEPRECATED - use sourceControl)
+  // ============================================
+
+  /** @deprecated Use sourceControl.provider === 'github' && sourceControl.syncIssues instead */
   githubEnabled: boolean;
+  /** @deprecated Use global AppSettings.github.token instead */
   githubToken?: string;
+  /** @deprecated Use sourceControl.owner and sourceControl.repo instead */
   githubRepo?: string; // Format: owner/repo
+  /** @deprecated Use sourceControl.syncIssues instead */
   githubAutoSync?: boolean; // Auto-sync issues on project load
+  /** @deprecated Use global AppSettings.github.authMethod instead */
   githubAuthMethod?: 'oauth' | 'pat'; // How the token was obtained
 
-  // GitLab Integration
+  // ============================================
+  // GitLab Integration (DEPRECATED - use sourceControl)
+  // ============================================
+
+  /** @deprecated Use sourceControl.provider === 'gitlab' && sourceControl.syncIssues instead */
   gitlabEnabled: boolean;
+  /** @deprecated Use global AppSettings.gitlabInstances[].url instead */
   gitlabInstanceUrl?: string; // Default: https://gitlab.com, or self-hosted URL
+  /** @deprecated Use global AppSettings.gitlabInstances[].token instead */
   gitlabToken?: string;
+  /** @deprecated Use sourceControl.owner and sourceControl.repo instead */
   gitlabProject?: string; // Format: group/project or numeric ID
+  /** @deprecated Use sourceControl.syncIssues instead */
   gitlabAutoSync?: boolean; // Auto-sync issues on project load
 
   // Git/Worktree Settings
+  /** @deprecated Use sourceControl.branch instead for sync, keep for worktree creation */
   defaultBranch?: string; // Base branch for worktree creation (e.g., 'main', 'develop')
 
   // Graphiti Memory Integration (V2 - Multi-provider support)
