@@ -11,7 +11,8 @@ import type {
   InfrastructureStatus,
   GraphitiValidationResult,
   GraphitiConnectionTestResult,
-  GitStatus
+  GitStatus,
+  DetectedRemote
 } from '../../shared/types';
 
 // Tab state interface (persisted in main process)
@@ -97,6 +98,7 @@ export interface ProjectAPI {
   detectMainBranch: (projectPath: string) => Promise<IPCResult<string | null>>;
   checkGitStatus: (projectPath: string) => Promise<IPCResult<GitStatus>>;
   initializeGit: (projectPath: string) => Promise<IPCResult<InitializationResult>>;
+  detectGitRemote: (projectPath: string) => Promise<IPCResult<DetectedRemote | null>>;
 
   // Ollama Model Detection
   checkOllamaStatus: (baseUrl?: string) => Promise<IPCResult<{
@@ -276,6 +278,9 @@ export const createProjectAPI = (): ProjectAPI => ({
 
   initializeGit: (projectPath: string): Promise<IPCResult<InitializationResult>> =>
     ipcRenderer.invoke(IPC_CHANNELS.GIT_INITIALIZE, projectPath),
+
+  detectGitRemote: (projectPath: string): Promise<IPCResult<DetectedRemote | null>> =>
+    ipcRenderer.invoke(IPC_CHANNELS.GIT_DETECT_REMOTE, projectPath),
 
   // Ollama Model Detection
   checkOllamaStatus: (baseUrl?: string) =>

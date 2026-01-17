@@ -10,7 +10,9 @@ import type {
   IPCResult,
   InitializationResult,
   AutoBuildVersionInfo,
-  GitStatus
+  GitStatus,
+  DetectedRemote,
+  SourceControlProvider
 } from '../../shared/types';
 import { projectStore } from '../project-store';
 import {
@@ -140,6 +142,172 @@ function detectMainBranch(projectPath: string): string | null {
 
   // Fallback: return the first branch (usually the current one)
   return branches[0] || null;
+}
+
+// ============================================
+// Git Remote Detection and URL Parsing
+// ============================================
+
+/**
+ * Parse a GitHub URL (SSH or HTTPS) and extract owner/repo
+ *
+ * Supported formats:
+ * - SSH: git@github.com:owner/repo.git
+ * - HTTPS: https://github.com/owner/repo.git
+ * - HTTPS without .git: https://github.com/owner/repo
+ */
+function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
+  // SSH format: git@github.com:owner/repo.git
+  const sshMatch = url.match(/^git@github\.com:([^/]+)\/([^/]+?)(?:\.git)?$/);
+  if (sshMatch) {
+    return { owner: sshMatch[1], repo: sshMatch[2] };
+  }
+
+  // HTTPS format: https://github.com/owner/repo.git or https://github.com/owner/repo
+  const httpsMatch = url.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?$/);
+  if (httpsMatch) {
+    return { owner: httpsMatch[1], repo: httpsMatch[2] };
+  }
+
+  return null;
+}
+
+/**
+ * Parse a GitLab URL (SSH or HTTPS) and extract group/project
+ * Supports nested groups (e.g., group/subgroup/project)
+ * Works for both gitlab.com and self-hosted instances
+ *
+ * Supported formats:
+ * - SSH: git@gitlab.com:group/project.git
+ * - SSH nested: git@gitlab.com:group/subgroup/project.git
+ * - SSH self-hosted: git@gitlab.company.com:group/project.git
+ * - HTTPS: https://gitlab.com/group/project.git
+ * - HTTPS nested: https://gitlab.com/group/subgroup/project.git
+ * - HTTPS self-hosted: https://gitlab.company.com/group/project.git
+ */
+function parseGitLabUrl(url: string): { owner: string; repo: string; instanceUrl: string } | null {
+  // SSH format: git@<host>:<path>.git
+  const sshMatch = url.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
+  if (sshMatch) {
+    const host = sshMatch[1];
+    const pathParts = sshMatch[2].split('/');
+    if (pathParts.length < 2) return null;
+
+    const repo = pathParts.pop()!;
+    const owner = pathParts.join('/'); // Supports nested groups
+    const instanceUrl = `https://${host}`;
+
+    return { owner, repo, instanceUrl };
+  }
+
+  // HTTPS format: https://<host>/<path>.git or https://<host>/<path>
+  const httpsMatch = url.match(/^https?:\/\/([^/]+)\/(.+?)(?:\.git)?$/);
+  if (httpsMatch) {
+    const host = httpsMatch[1];
+    const pathParts = httpsMatch[2].split('/');
+    if (pathParts.length < 2) return null;
+
+    const repo = pathParts.pop()!;
+    const owner = pathParts.join('/'); // Supports nested groups
+    const instanceUrl = `https://${host}`;
+
+    return { owner, repo, instanceUrl };
+  }
+
+  return null;
+}
+
+/**
+ * Determine the source control provider from a remote URL
+ */
+function detectProvider(url: string): SourceControlProvider {
+  // Check for GitHub
+  if (url.includes('github.com')) {
+    return 'github';
+  }
+
+  // Check for GitLab (gitlab.com or any URL that looks like GitLab)
+  // Self-hosted GitLab instances are harder to detect, so we check for gitlab in the host
+  // or fall back to gitlab if it's not GitHub
+  if (url.includes('gitlab')) {
+    return 'gitlab';
+  }
+
+  // For other Git hosting (Bitbucket, self-hosted GitLab without gitlab in name, etc.)
+  // Try to parse as GitLab format since it's more generic
+  const parsed = parseGitLabUrl(url);
+  if (parsed) {
+    // If it parses and has a recognizable structure, treat as gitlab (generic)
+    return 'gitlab';
+  }
+
+  return 'none';
+}
+
+/**
+ * Build a normalized HTTPS URL for display
+ */
+function buildNormalizedUrl(provider: SourceControlProvider, instanceUrl: string, owner: string, repo: string): string {
+  if (provider === 'none') return '';
+  return `${instanceUrl}/${owner}/${repo}`;
+}
+
+/**
+ * Get the origin remote URL from a git repository
+ */
+function getGitRemoteUrl(projectPath: string): string | null {
+  try {
+    const result = execFileSync(getToolPath('git'), ['remote', 'get-url', 'origin'], {
+      cwd: projectPath,
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+    return result.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Detect and parse the git remote for a project directory
+ * Returns structured information about the remote including provider, owner, repo
+ */
+function detectGitRemote(projectPath: string): DetectedRemote | null {
+  const url = getGitRemoteUrl(projectPath);
+  if (!url) return null;
+
+  const provider = detectProvider(url);
+
+  if (provider === 'github') {
+    const parsed = parseGitHubUrl(url);
+    if (!parsed) return null;
+
+    return {
+      provider,
+      url,
+      normalizedUrl: buildNormalizedUrl(provider, 'https://github.com', parsed.owner, parsed.repo),
+      owner: parsed.owner,
+      repo: parsed.repo,
+      instanceUrl: 'https://github.com'
+    };
+  }
+
+  if (provider === 'gitlab') {
+    const parsed = parseGitLabUrl(url);
+    if (!parsed) return null;
+
+    return {
+      provider,
+      url,
+      normalizedUrl: buildNormalizedUrl(provider, parsed.instanceUrl, parsed.owner, parsed.repo),
+      owner: parsed.owner,
+      repo: parsed.repo,
+      instanceUrl: parsed.instanceUrl
+    };
+  }
+
+  // Unknown provider
+  return null;
 }
 
 const settingsPath = path.join(app.getPath('userData'), 'settings.json');
@@ -497,6 +665,25 @@ export function registerProjectHandlers(
         }
         const result = initializeGit(projectPath);
         return { success: result.success, data: result, error: result.error };
+      } catch (error) {
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        };
+      }
+    }
+  );
+
+  // Detect git remote and parse provider/owner/repo information
+  ipcMain.handle(
+    IPC_CHANNELS.GIT_DETECT_REMOTE,
+    async (_, projectPath: string): Promise<IPCResult<DetectedRemote | null>> => {
+      try {
+        if (!existsSync(projectPath)) {
+          return { success: false, error: 'Directory does not exist' };
+        }
+        const remote = detectGitRemote(projectPath);
+        return { success: true, data: remote };
       } catch (error) {
         return {
           success: false,

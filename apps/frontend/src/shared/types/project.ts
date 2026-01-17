@@ -296,6 +296,25 @@ export interface ProjectContextData {
 export type SourceControlProvider = 'github' | 'gitlab' | 'none';
 
 /**
+ * Result of git remote detection
+ * Parsed from `git remote get-url origin`
+ */
+export interface DetectedRemote {
+  /** Detected provider (github, gitlab, or none if unknown) */
+  provider: SourceControlProvider;
+  /** Original URL from git remote */
+  url: string;
+  /** Normalized URL (always HTTPS format for display) */
+  normalizedUrl: string;
+  /** Repository owner (GitHub) or group path (GitLab, can include subgroups) */
+  owner: string;
+  /** Repository or project name (without .git suffix) */
+  repo: string;
+  /** Base URL of the instance (e.g., https://gitlab.com, https://github.com) */
+  instanceUrl: string;
+}
+
+/**
  * Project-level source control configuration
  * Auto-detected from git remote, with user toggles for sync options
  */
