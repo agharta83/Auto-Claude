@@ -330,7 +330,16 @@ const browserMockAPI: ElectronAPI = {
   openLogsFolder: async () => ({ success: false, error: 'Not available in browser mode' }),
   copyDebugInfo: async () => ({ success: false, error: 'Not available in browser mode' }),
   getRecentErrors: async () => [],
-  listLogFiles: async () => []
+  listLogFiles: async () => [],
+
+  // Source Control Operations (US#20-26)
+  testGitHubConnection: async () => ({ success: true, data: { success: false, error: 'Not available in browser mode' } }),
+  testGitLabConnection: async () => ({ success: true, data: { success: false, error: 'Not available in browser mode' } }),
+  listGitLabInstances: async () => ({ success: true, data: [] }),
+  addGitLabInstance: async () => ({ success: false, error: 'Not available in browser mode' }),
+  updateGitLabInstance: async () => ({ success: false, error: 'Not available in browser mode' }),
+  removeGitLabInstance: async () => ({ success: false, error: 'Not available in browser mode' }),
+  getTokenForProject: async () => ({ success: true, data: { provider: 'none' as const, error: 'Not available in browser mode' } })
 };
 
 /**

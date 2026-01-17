@@ -48,6 +48,10 @@
     "debug": {
       "title": "Debug & Logs",
       "description": "Troubleshooting tools"
+    },
+    "sourceControl": {
+      "title": "Source Control",
+      "description": "GitHub & GitLab global tokens"
     }
   },
   "apiProfiles": {
@@ -453,6 +457,71 @@
       "tokenSaveFailed": "Failed to Save Token",
       "settingsUpdateFailed": "Failed to Update Settings",
       "tryAgain": "Please try again."
+    }
+  },
+  "sourceControl": {
+    "title": "Source Control",
+    "description": "Configure GitHub and GitLab global authentication",
+    "github": {
+      "title": "GitHub",
+      "description": "Configure your GitHub Personal Access Token for use across all projects.",
+      "tokenLabel": "Personal Access Token",
+      "tokenHint": "Create a token with repo scope from",
+      "testConnection": "Test Connection",
+      "disconnect": "Disconnect",
+      "status": {
+        "notConfigured": "Not configured",
+        "testing": "Testing connection...",
+        "connected": "Connected as {{username}}",
+        "invalid": "Invalid or expired token"
+      },
+      "toast": {
+        "connected": "GitHub Connected",
+        "connectedAs": "Successfully authenticated as {{username}}",
+        "failed": "Connection Failed",
+        "invalidToken": "The provided token is invalid or expired",
+        "error": "An error occurred while testing the connection"
+      }
+    },
+    "gitlab": {
+      "title": "GitLab Instances",
+      "description": "Configure GitLab instances for use across all projects. You can add multiple instances (gitlab.com and self-hosted).",
+      "addInstance": "Add Instance",
+      "noInstances": "No GitLab instances configured",
+      "default": "Default",
+      "hasToken": "Token configured",
+      "noToken": "No token",
+      "setDefault": "Set Default",
+      "modal": {
+        "addTitle": "Add GitLab Instance",
+        "editTitle": "Edit GitLab Instance",
+        "description": "Configure a GitLab instance for source control integration",
+        "name": "Display Name",
+        "namePlaceholder": "Company GitLab",
+        "url": "Instance URL",
+        "urlHint": "The base URL of the GitLab instance (e.g., https://gitlab.com or https://gitlab.company.com)",
+        "token": "Personal Access Token",
+        "tokenHint": "Create a token with api scope from the GitLab instance settings",
+        "test": "Test Connection",
+        "testSuccess": "Connected as {{username}}",
+        "testFailed": "Connection failed"
+      },
+      "delete": {
+        "title": "Delete GitLab Instance?",
+        "description": "Are you sure you want to delete \"{{name}}\"? Projects using this instance will need to be reconfigured."
+      },
+      "toast": {
+        "added": "Instance Added",
+        "addedDescription": "\"{{name}}\" has been added successfully",
+        "addFailed": "Failed to add instance",
+        "updated": "Instance Updated",
+        "updatedDescription": "\"{{name}}\" has been updated successfully",
+        "updateFailed": "Failed to update instance",
+        "deleted": "Instance Deleted",
+        "deletedDescription": "\"{{name}}\" has been removed",
+        "deleteFailed": "Failed to delete instance",
+        "error": "An error occurred"
+      }
     }
   },
   "debug": {

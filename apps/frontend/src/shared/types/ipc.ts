@@ -23,8 +23,10 @@ import type {
   GitStatus,
   CustomMcpServer,
   McpHealthCheckResult,
-  McpTestConnectionResult
+  McpTestConnectionResult,
+  ProjectSourceControl
 } from './project';
+import type { GitLabInstance } from './settings';
 import type {
   Task,
   TaskStatus,
@@ -805,6 +807,15 @@ export interface ElectronAPI {
   // MCP Server health check operations
   checkMcpHealth: (server: CustomMcpServer) => Promise<IPCResult<McpHealthCheckResult>>;
   testMcpConnection: (server: CustomMcpServer) => Promise<IPCResult<McpTestConnectionResult>>;
+
+  // Source Control operations (global GitHub/GitLab settings)
+  testGitHubConnection: (token: string) => Promise<IPCResult<{ success: boolean; username?: string; error?: string }>>;
+  testGitLabConnection: (instanceUrl: string, token: string) => Promise<IPCResult<{ success: boolean; username?: string; instanceUrl?: string; error?: string }>>;
+  listGitLabInstances: () => Promise<IPCResult<GitLabInstance[]>>;
+  addGitLabInstance: (instance: Omit<GitLabInstance, 'id'>) => Promise<IPCResult<GitLabInstance>>;
+  updateGitLabInstance: (id: string, updates: Partial<Omit<GitLabInstance, 'id'>>) => Promise<IPCResult<GitLabInstance>>;
+  removeGitLabInstance: (id: string) => Promise<IPCResult<{ removedId: string; affectedProjects: string[] }>>;
+  getTokenForProject: (sourceControl: ProjectSourceControl | undefined) => Promise<IPCResult<{ token?: string; provider: 'github' | 'gitlab' | 'none'; instanceId?: string; error?: string }>>;
 }
 
 declare global {

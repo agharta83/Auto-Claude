@@ -48,6 +48,10 @@
     "debug": {
       "title": "Debug & Logs",
       "description": "Outils de dépannage"
+    },
+    "sourceControl": {
+      "title": "Contrôle de source",
+      "description": "Tokens globaux GitHub & GitLab"
     }
   },
   "apiProfiles": {
@@ -453,6 +457,71 @@
       "tokenSaveFailed": "Échec de l'enregistrement du token",
       "settingsUpdateFailed": "Échec de la mise à jour des paramètres",
       "tryAgain": "Veuillez réessayer."
+    }
+  },
+  "sourceControl": {
+    "title": "Contrôle de source",
+    "description": "Configurez l'authentification globale GitHub et GitLab",
+    "github": {
+      "title": "GitHub",
+      "description": "Configurez votre Personal Access Token GitHub pour l'utiliser dans tous les projets.",
+      "tokenLabel": "Personal Access Token",
+      "tokenHint": "Créez un token avec le scope repo depuis",
+      "testConnection": "Tester la connexion",
+      "disconnect": "Déconnecter",
+      "status": {
+        "notConfigured": "Non configuré",
+        "testing": "Test de connexion en cours...",
+        "connected": "Connecté en tant que {{username}}",
+        "invalid": "Token invalide ou expiré"
+      },
+      "toast": {
+        "connected": "GitHub connecté",
+        "connectedAs": "Authentifié avec succès en tant que {{username}}",
+        "failed": "Échec de la connexion",
+        "invalidToken": "Le token fourni est invalide ou expiré",
+        "error": "Une erreur s'est produite lors du test de connexion"
+      }
+    },
+    "gitlab": {
+      "title": "Instances GitLab",
+      "description": "Configurez les instances GitLab pour l'utiliser dans tous les projets. Vous pouvez ajouter plusieurs instances (gitlab.com et auto-hébergées).",
+      "addInstance": "Ajouter une instance",
+      "noInstances": "Aucune instance GitLab configurée",
+      "default": "Par défaut",
+      "hasToken": "Token configuré",
+      "noToken": "Pas de token",
+      "setDefault": "Définir par défaut",
+      "modal": {
+        "addTitle": "Ajouter une instance GitLab",
+        "editTitle": "Modifier l'instance GitLab",
+        "description": "Configurez une instance GitLab pour l'intégration du contrôle de source",
+        "name": "Nom d'affichage",
+        "namePlaceholder": "GitLab Entreprise",
+        "url": "URL de l'instance",
+        "urlHint": "L'URL de base de l'instance GitLab (ex: https://gitlab.com ou https://gitlab.entreprise.com)",
+        "token": "Personal Access Token",
+        "tokenHint": "Créez un token avec le scope api depuis les paramètres de l'instance GitLab",
+        "test": "Tester la connexion",
+        "testSuccess": "Connecté en tant que {{username}}",
+        "testFailed": "Échec de la connexion"
+      },
+      "delete": {
+        "title": "Supprimer l'instance GitLab ?",
+        "description": "Êtes-vous sûr de vouloir supprimer \"{{name}}\" ? Les projets utilisant cette instance devront être reconfigurés."
+      },
+      "toast": {
+        "added": "Instance ajoutée",
+        "addedDescription": "\"{{name}}\" a été ajoutée avec succès",
+        "addFailed": "Échec de l'ajout de l'instance",
+        "updated": "Instance mise à jour",
+        "updatedDescription": "\"{{name}}\" a été mise à jour avec succès",
+        "updateFailed": "Échec de la mise à jour de l'instance",
+        "deleted": "Instance supprimée",
+        "deletedDescription": "\"{{name}}\" a été supprimée",
+        "deleteFailed": "Échec de la suppression de l'instance",
+        "error": "Une erreur s'est produite"
+      }
     }
   },
   "debug": {
