@@ -476,6 +476,15 @@ export const IPC_CHANNELS = {
   GIT_INITIALIZE: 'git:initialize',
   GIT_DETECT_REMOTE: 'git:detectRemote',
 
+  // Source Control operations (unified GitHub/GitLab management)
+  SOURCE_CONTROL_TEST_GITHUB: 'sourceControl:testGitHub',
+  SOURCE_CONTROL_TEST_GITLAB: 'sourceControl:testGitLab',
+  SOURCE_CONTROL_LIST_GITLAB_INSTANCES: 'sourceControl:listGitLabInstances',
+  SOURCE_CONTROL_ADD_GITLAB_INSTANCE: 'sourceControl:addGitLabInstance',
+  SOURCE_CONTROL_UPDATE_GITLAB_INSTANCE: 'sourceControl:updateGitLabInstance',
+  SOURCE_CONTROL_REMOVE_GITLAB_INSTANCE: 'sourceControl:removeGitLabInstance',
+  SOURCE_CONTROL_GET_TOKEN_FOR_PROJECT: 'sourceControl:getTokenForProject',
+
   // App auto-update operations
   APP_UPDATE_CHECK: 'app-update:check',
   APP_UPDATE_DOWNLOAD: 'app-update:download',
