@@ -146,7 +146,38 @@
     "devtools": "Dev Tools",
     "privacy": "Privacy",
     "memory": "Memory",
+    "sourceControl": "Source Control",
     "done": "Done"
+  },
+  "sourceControl": {
+    "title": "Source Control Integration",
+    "subtitle": "Connect GitHub and GitLab to sync issues and pull requests (optional)",
+    "github": {
+      "title": "GitHub",
+      "tokenLabel": "Personal Access Token",
+      "tokenPlaceholder": "ghp_xxxxxxxxxxxx",
+      "getToken": "Get a token"
+    },
+    "gitlab": {
+      "title": "GitLab",
+      "nameLabel": "Instance Name",
+      "urlLabel": "Instance URL",
+      "tokenLabel": "Personal Access Token",
+      "tokenPlaceholder": "glpat-xxxxxxxxxxxx",
+      "getToken": "Get a token"
+    },
+    "buttons": {
+      "testConnection": "Test"
+    },
+    "status": {
+      "testing": "Testing...",
+      "connected": "Connected as {{username}}",
+      "invalid": "Invalid token"
+    },
+    "info": "Source control integration lets you sync issues and pull requests with your projects. You can configure this later in Settings.",
+    "errors": {
+      "saveFailed": "Failed to save configuration. Please try again."
+    }
   },
   "privacy": {
     "title": "Help Improve Auto Claude",

@@ -146,7 +146,38 @@
     "devtools": "Outils dev",
     "privacy": "Confidentialité",
     "memory": "Mémoire",
+    "sourceControl": "Source Control",
     "done": "Terminé"
+  },
+  "sourceControl": {
+    "title": "Intégration Source Control",
+    "subtitle": "Connectez GitHub et GitLab pour synchroniser les issues et pull requests (optionnel)",
+    "github": {
+      "title": "GitHub",
+      "tokenLabel": "Personal Access Token",
+      "tokenPlaceholder": "ghp_xxxxxxxxxxxx",
+      "getToken": "Obtenir un token"
+    },
+    "gitlab": {
+      "title": "GitLab",
+      "nameLabel": "Nom de l'instance",
+      "urlLabel": "URL de l'instance",
+      "tokenLabel": "Personal Access Token",
+      "tokenPlaceholder": "glpat-xxxxxxxxxxxx",
+      "getToken": "Obtenir un token"
+    },
+    "buttons": {
+      "testConnection": "Tester"
+    },
+    "status": {
+      "testing": "Test en cours...",
+      "connected": "Connecté en tant que {{username}}",
+      "invalid": "Token invalide"
+    },
+    "info": "L'intégration source control vous permet de synchroniser les issues et pull requests avec vos projets. Vous pouvez configurer ceci plus tard dans les Paramètres.",
+    "errors": {
+      "saveFailed": "Échec de l'enregistrement de la configuration. Veuillez réessayer."
+    }
   },
   "privacy": {
     "title": "Aidez à améliorer Auto Claude",
