@@ -172,3 +172,6 @@ OPUS_ANALYSIS_AND_IDEAS.md
 
 # Local specs (personal feature tracking)
 .specs/
+
+# Auto Claude generated files
+logs/security/
