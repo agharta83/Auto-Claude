@@ -82,17 +82,11 @@ const baseNavItems: NavItem[] = [
   { id: 'worktrees', labelKey: 'navigation:items.worktrees', icon: GitBranch, shortcut: 'W' }
 ];
 
-// GitHub nav items shown when GitHub is enabled
-const githubNavItems: NavItem[] = [
-  { id: 'github-issues', labelKey: 'navigation:items.githubIssues', icon: Github, shortcut: 'G' },
-  { id: 'github-prs', labelKey: 'navigation:items.githubPRs', icon: GitPullRequest, shortcut: 'P' }
-];
-
-// GitLab nav items shown when GitLab is enabled
-const gitlabNavItems: NavItem[] = [
-  { id: 'gitlab-issues', labelKey: 'navigation:items.gitlabIssues', icon: GitlabIcon, shortcut: 'B' },
-  { id: 'gitlab-merge-requests', labelKey: 'navigation:items.gitlabMRs', icon: GitMerge, shortcut: 'R' }
-];
+// Individual source control nav items - shown based on provider and sync settings
+const githubIssuesItem: NavItem = { id: 'github-issues', labelKey: 'navigation:items.githubIssues', icon: Github, shortcut: 'G' };
+const githubPRsItem: NavItem = { id: 'github-prs', labelKey: 'navigation:items.githubPRs', icon: GitPullRequest, shortcut: 'P' };
+const gitlabIssuesItem: NavItem = { id: 'gitlab-issues', labelKey: 'navigation:items.gitlabIssues', icon: GitlabIcon, shortcut: 'B' };
+const gitlabMRsItem: NavItem = { id: 'gitlab-merge-requests', labelKey: 'navigation:items.gitlabMRs', icon: GitMerge, shortcut: 'R' };
 
 export function Sidebar({
   onSettingsClick,
@@ -137,20 +131,41 @@ export function Sidebar({
     loadEnvConfig();
   }, [selectedProject?.id, selectedProject?.autoBuildPath]);
 
-  // Compute visible nav items based on GitHub/GitLab enabled state
+  // Compute visible nav items based on sourceControl settings
+  // US#50-53: Show Issues/PRs/MRs only when syncIssues/syncPullRequests is enabled
+  // and use provider-specific icons and labels (GitHub vs GitLab)
   const visibleNavItems = useMemo(() => {
     const items = [...baseNavItems];
+    const sourceControl = envConfig?.sourceControl;
 
-    if (envConfig?.githubEnabled) {
-      items.push(...githubNavItems);
-    }
+    if (sourceControl) {
+      const isGitHub = sourceControl.provider === 'github';
+      const isGitLab = sourceControl.provider === 'gitlab';
 
-    if (envConfig?.gitlabEnabled) {
-      items.push(...gitlabNavItems);
+      // US#50: Show Issues section only if syncIssues === true
+      if (sourceControl.syncIssues) {
+        // US#52 & US#53: Use provider-specific labels and icons
+        if (isGitHub) {
+          items.push(githubIssuesItem);
+        } else if (isGitLab) {
+          items.push(gitlabIssuesItem);
+        }
+      }
+
+      // US#51: Show PRs/MRs section only if syncPullRequests === true
+      if (sourceControl.syncPullRequests) {
+        // US#52 & US#53: Use provider-specific labels and icons
+        // "Pull Requests" for GitHub, "Merge Requests" for GitLab
+        if (isGitHub) {
+          items.push(githubPRsItem);
+        } else if (isGitLab) {
+          items.push(gitlabMRsItem);
+        }
+      }
     }
 
     return items;
-  }, [envConfig?.githubEnabled, envConfig?.gitlabEnabled]);
+  }, [envConfig?.sourceControl]);
 
   // Keyboard shortcuts
   useEffect(() => {
