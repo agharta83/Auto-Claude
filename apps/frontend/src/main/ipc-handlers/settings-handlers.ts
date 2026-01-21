@@ -18,9 +18,10 @@ import type {
 import { AgentManager } from '../agent';
 import type { BrowserWindow } from 'electron';
 import { setUpdateChannel, setUpdateChannelWithDowngradeCheck } from '../app-updater';
-import { getSettingsPath, readSettingsFile } from '../settings-utils';
+import { getSettingsPath, readSettingsFile, writeSettingsFile } from '../settings-utils';
 import { configureTools, getToolPath, getToolInfo, isPathFromWrongPlatform, preWarmToolCache } from '../cli-tool-manager';
 import { parseEnvFile } from './utils';
+import { runSourceControlMigration } from '../source-control-migration';
 
 const settingsPath = getSettingsPath();
 
@@ -132,6 +133,24 @@ export function registerSettingsHandlers(
         }
         settings._migratedDefaultModelSync = true;
         needsSave = true;
+      }
+
+      // Migration: Source Control V2 (US#60-67)
+      // Migrates per-project GitHub/GitLab tokens to global configuration
+      if (!settings.migrationCompleted?.sourceControlV2) {
+        try {
+          const migrationResult = await runSourceControlMigration(settings as unknown as Record<string, unknown>);
+          if (migrationResult.migrated) {
+            needsSave = true;
+            console.log('[SETTINGS_GET] Source control migration completed');
+            if (migrationResult.log.warnings.length > 0) {
+              console.warn('[SETTINGS_GET] Migration warnings:', migrationResult.log.warnings);
+            }
+          }
+        } catch (migrationError) {
+          console.error('[SETTINGS_GET] Source control migration failed:', migrationError);
+          // Continue anyway - migration can be retried on next startup
+        }
       }
 
       // Migration: Clear CLI tool paths that are from a different platform

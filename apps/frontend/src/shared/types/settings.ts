@@ -254,6 +254,14 @@ export interface AgentProfile {
   isAutoProfile?: boolean;
 }
 
+/**
+ * Migration completion flags to track one-time migrations
+ */
+export interface MigrationFlags {
+  /** Source Control V2 migration (tokens to global config) */
+  sourceControlV2?: boolean;
+}
+
 export interface AppSettings {
   theme: 'light' | 'dark' | 'system';
   colorTheme?: ColorTheme;
@@ -326,6 +334,8 @@ export interface AppSettings {
   dangerouslySkipPermissions?: boolean;
   // Anonymous error reporting (Sentry) - enabled by default to help improve the app
   sentryEnabled?: boolean;
+  // Migration completion tracking (persisted flags for one-time migrations)
+  migrationCompleted?: MigrationFlags;
 }
 
 // Auto-Claude Source Environment Configuration (for auto-claude repo .env)
