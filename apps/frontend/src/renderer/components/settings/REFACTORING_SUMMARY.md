@@ -28,7 +28,7 @@ settings/
 ├── integrations/               (Third-party service integrations)
 │   ├── index.ts
 │   ├── LinearIntegration.tsx   (Complete Linear setup)
-│   └── GitHubIntegration.tsx   (Complete GitHub setup)
+│   └── SourceControlProjectSettings.tsx  (Unified GitHub/GitLab setup)
 ├── sections/                   (Section routing logic)
 │   ├── index.ts
 │   └── SectionRouter.tsx       (Routes to appropriate settings)
@@ -76,20 +76,22 @@ settings/
   - `RealtimeSyncWarning` - Warning about auto-import
   - `TeamProjectIds` - Team/Project ID configuration
 
-#### `GitHubIntegration.tsx`
-- **Purpose**: Complete GitHub integration settings and UI
-- **Lines**: 195
+#### `SourceControlProjectSettings.tsx`
+- **Purpose**: Unified GitHub and GitLab integration settings and UI
+- **Lines**: ~1050
 - **Features**:
-  - Token management with visibility toggle
-  - Repository configuration
-  - Connection status display
-  - Auto-sync settings
+  - Automatic git remote detection
+  - Provider-aware configuration (GitHub/GitLab)
+  - Token status from global settings
+  - Sync toggles for Issues and Pull/Merge Requests
+  - Branch selection
+  - Manual configuration fallback
 - **Sub-components**:
-  - `TokenInput` - GitHub token input with show/hide
-  - `RepositoryInput` - Repository name configuration
-  - `ConnectionStatus` - Shows GitHub connection state
-  - `IssuesAvailableInfo` - Info about available issues
-  - `AutoSyncToggle` - Auto-sync control
+  - `DetectedRemoteSection` - Shows detected repository with refresh
+  - `TokenStatusAlert` - Token status with link to global settings
+  - `SyncOptions` - Sync toggles for issues and PRs/MRs
+  - `BranchSelector` - Branch dropdown with refresh
+  - `ManualConfigSection` - Manual provider/repo configuration
 
 ### 3. Section Routing (`sections/`)
 

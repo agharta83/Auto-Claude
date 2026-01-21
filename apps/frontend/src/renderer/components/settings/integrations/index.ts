@@ -4,4 +4,4 @@
  */
 
 export { LinearIntegration } from './LinearIntegration';
-export { GitHubIntegration } from './GitHubIntegration';
+export { SourceControlProjectSettings } from './SourceControlProjectSettings';

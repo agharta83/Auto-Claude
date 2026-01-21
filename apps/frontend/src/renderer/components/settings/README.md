@@ -14,7 +14,7 @@ settings/
 │   └── index.ts                     # Exports
 ├── integrations/                    # Third-party integrations
 │   ├── LinearIntegration.tsx        # Linear setup (241 lines)
-│   ├── GitHubIntegration.tsx        # GitHub setup (215 lines)
+│   ├── SourceControlProjectSettings.tsx  # GitHub/GitLab unified setup (~1050 lines)
 │   └── index.ts                     # Exports
 ├── sections/                        # Section routing
 │   ├── SectionRouter.tsx            # Routes between settings sections
@@ -68,20 +68,22 @@ settings/
   - `RealtimeSyncWarning` - Warning about auto-import
   - `TeamProjectIds` - ID configuration grid
 
-**GitHubIntegration** (215 lines)
-- Complete GitHub integration UI
+**SourceControlProjectSettings** (~1050 lines)
+- Unified GitHub and GitLab integration UI
 - Features:
-  - Enable/disable toggle
-  - Personal access token input
-  - Repository configuration
-  - Connection status display
-  - Auto-sync on load toggle
+  - Automatic git remote detection
+  - Provider-aware configuration (GitHub/GitLab)
+  - Token status from global settings
+  - Sync Issues toggle
+  - Sync Pull/Merge Requests toggle
+  - Branch selector with refresh
+  - Manual configuration fallback
 - Sub-components:
-  - `TokenInput` - Token input with visibility toggle
-  - `RepositoryInput` - Repo name configuration
-  - `ConnectionStatus` - Connection state indicator
-  - `IssuesAvailableInfo` - Info card about issues
-  - `AutoSyncToggle` - Auto-sync control
+  - `DetectedRemoteSection` - Shows detected repo with refresh
+  - `TokenStatusAlert` - Shows token status with link to settings
+  - `SyncOptions` - Sync toggles for issues and PRs/MRs
+  - `BranchSelector` - Branch dropdown with refresh
+  - `ManualConfigSection` - Manual provider/repo configuration
 
 ### Section Routing
 
@@ -126,7 +128,7 @@ import { EmptyProjectState, ErrorDisplay, InitializationGuard } from './common';
 ### Using Integration Components
 
 ```tsx
-import { LinearIntegration, GitHubIntegration } from './integrations';
+import { LinearIntegration, SourceControlProjectSettings } from './integrations';
 
 // Linear integration
 <LinearIntegration
@@ -139,14 +141,14 @@ import { LinearIntegration, GitHubIntegration } from './integrations';
   onOpenLinearImport={handleOpen}
 />
 
-// GitHub integration
-<GitHubIntegration
+// Source Control integration (GitHub/GitLab unified)
+<SourceControlProjectSettings
   envConfig={envConfig}
   updateEnvConfig={updateEnvConfig}
-  showGitHubToken={showToken}
-  setShowGitHubToken={setShowToken}
-  gitHubConnectionStatus={status}
-  isCheckingGitHub={isChecking}
+  projectPath={project.path}
+  settings={settings}
+  setSettings={setSettings}
+  isOpen={true}
 />
 ```
 
@@ -201,7 +203,7 @@ const hookProxy = createHookProxy(hookRef);
 
 1. **Unit Tests**
    - Each common component (EmptyProjectState, ErrorDisplay, InitializationGuard)
-   - Each integration component (LinearIntegration, GitHubIntegration)
+   - Each integration component (LinearIntegration, SourceControlProjectSettings)
    - Hook proxy factory utility
 
 2. **Integration Tests**

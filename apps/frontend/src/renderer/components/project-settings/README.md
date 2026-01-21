@@ -25,7 +25,6 @@ project-settings/
 ├── AutoBuildIntegration.tsx          # Auto-Build setup and status
 ├── ClaudeAuthSection.tsx             # Claude authentication configuration
 ├── LinearIntegrationSection.tsx      # Linear project management integration
-├── GitHubIntegrationSection.tsx      # GitHub issues integration
 ├── MemoryBackendSection.tsx          # Graphiti/file-based memory configuration
 ├── AgentConfigSection.tsx            # Agent model selection
 ├── NotificationsSection.tsx          # Notification preferences
@@ -99,22 +98,6 @@ hooks/
 - Display connection status
 - Manage real-time sync settings
 - Handle task import from Linear
-
-#### GitHubIntegrationSection.tsx
-**Purpose**: Configures GitHub issues integration.
-**Props**:
-- `isExpanded`: Section expand/collapse state
-- `onToggle`: Toggle handler
-- `envConfig`: Environment configuration
-- `onUpdateConfig`: Configuration update handler
-- `gitHubConnectionStatus`: Connection status
-- `isCheckingGitHub`: Connection check in progress
-
-**Responsibilities**:
-- Enable/disable GitHub integration
-- Configure GitHub PAT and repository
-- Display connection status
-- Manage auto-sync settings
 
 #### MemoryBackendSection.tsx
 **Purpose**: Configures memory backend (Graphiti vs file-based).
