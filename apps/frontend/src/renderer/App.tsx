@@ -783,7 +783,11 @@ export function App() {
                   onProjectSelect={handleProjectTabSelect}
                   onProjectClose={handleProjectTabClose}
                   onAddProject={handleAddProject}
-                  onSettingsClick={() => setIsSettingsDialogOpen(true)}
+                  onSettingsClick={() => {
+                    // Point 1: Open settings dialog with project settings as default view
+                    setSettingsInitialProjectSection('general');
+                    setIsSettingsDialogOpen(true);
+                  }}
                 />
               </SortableContext>
 
@@ -837,7 +841,7 @@ export function App() {
                 {activeView === 'github-issues' && (activeProjectId || selectedProjectId) && (
                   <GitHubIssues
                     onOpenSettings={() => {
-                      setSettingsInitialProjectSection('github');
+                      setSettingsInitialProjectSection('sourceControl');
                       setIsSettingsDialogOpen(true);
                     }}
                     onNavigateToTask={handleGoToTask}
@@ -846,7 +850,7 @@ export function App() {
                 {activeView === 'gitlab-issues' && (activeProjectId || selectedProjectId) && (
                   <GitLabIssues
                     onOpenSettings={() => {
-                      setSettingsInitialProjectSection('gitlab');
+                      setSettingsInitialProjectSection('sourceControl');
                       setIsSettingsDialogOpen(true);
                     }}
                     onNavigateToTask={handleGoToTask}
@@ -857,7 +861,7 @@ export function App() {
                   <div className={activeView === 'github-prs' ? 'h-full' : 'hidden'}>
                     <GitHubPRs
                       onOpenSettings={() => {
-                        setSettingsInitialProjectSection('github');
+                        setSettingsInitialProjectSection('sourceControl');
                         setIsSettingsDialogOpen(true);
                       }}
                       isActive={activeView === 'github-prs'}
@@ -868,7 +872,7 @@ export function App() {
                   <GitLabMergeRequests
                     projectId={activeProjectId || selectedProjectId!}
                     onOpenSettings={() => {
-                      setSettingsInitialProjectSection('gitlab');
+                      setSettingsInitialProjectSection('sourceControl');
                       setIsSettingsDialogOpen(true);
                     }}
                   />

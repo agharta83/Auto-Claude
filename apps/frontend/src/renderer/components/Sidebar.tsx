@@ -51,7 +51,7 @@ import { GitSetupModal } from './GitSetupModal';
 import { RateLimitIndicator } from './RateLimitIndicator';
 import { ClaudeCodeStatusBadge } from './ClaudeCodeStatusBadge';
 import { UpdateBanner } from './UpdateBanner';
-import type { Project, AutoBuildVersionInfo, GitStatus, ProjectEnvConfig } from '../../shared/types';
+import type { Project, GitStatus } from '../../shared/types';
 
 export type SidebarView = 'kanban' | 'terminals' | 'roadmap' | 'context' | 'ideation' | 'github-issues' | 'gitlab-issues' | 'github-prs' | 'gitlab-merge-requests' | 'changelog' | 'insights' | 'worktrees' | 'agent-tools';
 
@@ -106,37 +106,16 @@ export function Sidebar({
   const [gitStatus, setGitStatus] = useState<GitStatus | null>(null);
   const [pendingProject, setPendingProject] = useState<Project | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
-  const [envConfig, setEnvConfig] = useState<ProjectEnvConfig | null>(null);
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
-
-  // Load env config when project changes to check GitHub/GitLab enabled state
-  useEffect(() => {
-    const loadEnvConfig = async () => {
-      if (selectedProject?.autoBuildPath) {
-        try {
-          const result = await window.electronAPI.getProjectEnv(selectedProject.id);
-          if (result.success && result.data) {
-            setEnvConfig(result.data);
-          } else {
-            setEnvConfig(null);
-          }
-        } catch {
-          setEnvConfig(null);
-        }
-      } else {
-        setEnvConfig(null);
-      }
-    };
-    loadEnvConfig();
-  }, [selectedProject?.id, selectedProject?.autoBuildPath]);
 
   // Compute visible nav items based on sourceControl settings
   // US#50-53: Show Issues/PRs/MRs only when syncIssues/syncPullRequests is enabled
   // and use provider-specific icons and labels (GitHub vs GitLab)
   const visibleNavItems = useMemo(() => {
     const items = [...baseNavItems];
-    const sourceControl = envConfig?.sourceControl;
+    // sourceControl is now stored in ProjectSettings (JSON file), not in envConfig (.env file)
+    const sourceControl = selectedProject?.settings?.sourceControl;
 
     if (sourceControl) {
       const isGitHub = sourceControl.provider === 'github';
@@ -165,7 +144,7 @@ export function Sidebar({
     }
 
     return items;
-  }, [envConfig?.sourceControl]);
+  }, [selectedProject?.settings?.sourceControl]);
 
   // Keyboard shortcuts
   useEffect(() => {

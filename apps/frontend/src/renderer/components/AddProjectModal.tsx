@@ -65,19 +65,21 @@ export function AddProjectModal({ open, onOpenChange, onProjectAdded }: AddProje
       if (path) {
         const project = await addProject(path);
         if (project) {
-          // Auto-detect and save the main branch for the project
-          try {
-            const mainBranchResult = await window.electronAPI.detectMainBranch(path);
+          // Close modal immediately for better UX
+          onProjectAdded?.(project, !project.autoBuildPath);
+          onOpenChange(false);
+
+          // Auto-detect and save the main branch in background (fire-and-forget)
+          // This avoids blocking the UI with slow git fetch operations
+          window.electronAPI.detectMainBranch(path).then(mainBranchResult => {
             if (mainBranchResult.success && mainBranchResult.data) {
-              await window.electronAPI.updateProjectSettings(project.id, {
+              window.electronAPI.updateProjectSettings(project.id, {
                 mainBranch: mainBranchResult.data
               });
             }
-          } catch {
+          }).catch(() => {
             // Non-fatal - main branch can be set later in settings
-          }
-          onProjectAdded?.(project, !project.autoBuildPath);
-          onOpenChange(false);
+          });
         }
       }
     } catch (err) {
@@ -125,22 +127,23 @@ export function AddProjectModal({ open, onOpenChange, onProjectAdded }: AddProje
       // Add the project to our store
       const project = await addProject(result.data.path);
       if (project) {
-        // For new projects with git init, set main branch
+        // Close modal immediately for better UX
+        onProjectAdded?.(project, true); // New projects always need init
+        onOpenChange(false);
+
+        // For new projects with git init, detect main branch in background
         // Git init creates 'main' branch by default on modern git
         if (initGit) {
-          try {
-            const mainBranchResult = await window.electronAPI.detectMainBranch(result.data.path);
+          window.electronAPI.detectMainBranch(result.data.path).then(mainBranchResult => {
             if (mainBranchResult.success && mainBranchResult.data) {
-              await window.electronAPI.updateProjectSettings(project.id, {
+              window.electronAPI.updateProjectSettings(project.id, {
                 mainBranch: mainBranchResult.data
               });
             }
-          } catch {
+          }).catch(() => {
             // Non-fatal - main branch can be set later in settings
-          }
+          });
         }
-        onProjectAdded?.(project, true); // New projects always need init
-        onOpenChange(false);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('addProject.failedToCreate'));

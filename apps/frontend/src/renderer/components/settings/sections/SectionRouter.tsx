@@ -116,22 +116,22 @@ export function SectionRouter({
         </SettingsSection>
       );
 
-    case 'github':
-    case 'gitlab':
+    case 'sourceControl':
       return (
         <SettingsSection
-          title={t(`projectSections.${activeSection}.integrationTitle`)}
-          description={t(`projectSections.${activeSection}.integrationDescription`)}
+          title={t('projectSections.sourceControl.title')}
+          description={t('projectSections.sourceControl.description')}
         >
           <InitializationGuard
             initialized={!!project.autoBuildPath}
-            title={t(`projectSections.${activeSection}.integrationTitle`)}
-            description={t(`projectSections.${activeSection}.syncDescription`)}
+            title={t('projectSections.sourceControl.title')}
+            description={t('projectSections.sourceControl.description')}
           >
             <SourceControlProjectSettings
               envConfig={envConfig}
               updateEnvConfig={updateEnvConfig}
               projectPath={project.path}
+              projectId={project.id}
               settings={settings}
               setSettings={setSettings}
               isOpen={true}

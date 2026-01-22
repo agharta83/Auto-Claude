@@ -94,8 +94,7 @@ const appNavItemsConfig: NavItemConfig<AppSection>[] = [
 const projectNavItemsConfig: NavItemConfig<ProjectSettingsSection>[] = [
   { id: 'general', icon: Settings2 },
   { id: 'linear', icon: Zap },
-  { id: 'github', icon: Github },
-  { id: 'gitlab', icon: GitLabIcon },
+  { id: 'sourceControl', icon: GitBranch },
   { id: 'memory', icon: Database }
 ];
 
@@ -255,6 +254,53 @@ export function AppSettingsDialog({ open, onOpenChange, initialSection, initialP
             <nav className="w-80 border-r border-border bg-muted/30 p-4">
               <ScrollArea className="h-full">
                 <div className="space-y-6">
+                  {/* PROJECT Section - First for quick access when opening from project */}
+                  <div>
+                    <h3 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      {t('tabs.project')}
+                    </h3>
+
+                    {/* Project Selector */}
+                    <div className="px-1 mb-3">
+                      <ProjectSelector
+                        selectedProjectId={selectedProjectId}
+                        onProjectChange={handleProjectChange}
+                      />
+                    </div>
+
+                    {/* Project Nav Items */}
+                    <div className="space-y-1">
+                      {projectNavItemsConfig.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = activeTopLevel === 'project' && projectSection === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => {
+                              setActiveTopLevel('project');
+                              setProjectSection(item.id);
+                            }}
+                            disabled={projectNavDisabled}
+                            className={cn(
+                              'w-full flex items-start gap-3 p-3 rounded-lg text-left transition-all',
+                              isActive
+                                ? 'bg-accent text-accent-foreground'
+                                : projectNavDisabled
+                                  ? 'opacity-50 cursor-not-allowed text-muted-foreground'
+                                  : 'hover:bg-accent/50 text-muted-foreground hover:text-foreground'
+                            )}
+                          >
+                            <Icon className="h-5 w-5 mt-0.5 shrink-0" />
+                            <div className="min-w-0">
+                              <div className="font-medium text-sm">{t(`projectSections.${item.id}.title`)}</div>
+                              <div className="text-xs text-muted-foreground truncate">{t(`projectSections.${item.id}.description`)}</div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   {/* APPLICATION Section */}
                   <div>
                     <h3 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -307,53 +353,6 @@ export function AppSettingsDialog({ open, onOpenChange, initialSection, initialP
                           </div>
                         </button>
                       )}
-                    </div>
-                  </div>
-
-                  {/* PROJECT Section */}
-                  <div>
-                    <h3 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      {t('tabs.project')}
-                    </h3>
-
-                    {/* Project Selector */}
-                    <div className="px-1 mb-3">
-                      <ProjectSelector
-                        selectedProjectId={selectedProjectId}
-                        onProjectChange={handleProjectChange}
-                      />
-                    </div>
-
-                    {/* Project Nav Items */}
-                    <div className="space-y-1">
-                      {projectNavItemsConfig.map((item) => {
-                        const Icon = item.icon;
-                        const isActive = activeTopLevel === 'project' && projectSection === item.id;
-                        return (
-                          <button
-                            key={item.id}
-                            onClick={() => {
-                              setActiveTopLevel('project');
-                              setProjectSection(item.id);
-                            }}
-                            disabled={projectNavDisabled}
-                            className={cn(
-                              'w-full flex items-start gap-3 p-3 rounded-lg text-left transition-all',
-                              isActive
-                                ? 'bg-accent text-accent-foreground'
-                                : projectNavDisabled
-                                  ? 'opacity-50 cursor-not-allowed text-muted-foreground'
-                                  : 'hover:bg-accent/50 text-muted-foreground hover:text-foreground'
-                            )}
-                          >
-                            <Icon className="h-5 w-5 mt-0.5 shrink-0" />
-                            <div className="min-w-0">
-                              <div className="font-medium text-sm">{t(`projectSections.${item.id}.title`)}</div>
-                              <div className="text-xs text-muted-foreground truncate">{t(`projectSections.${item.id}.description`)}</div>
-                            </div>
-                          </button>
-                        );
-                      })}
                     </div>
                   </div>
                 </div>

@@ -64,6 +64,7 @@ interface SourceControlProjectSettingsProps {
   envConfig: ProjectEnvConfig | null;
   updateEnvConfig: (updates: Partial<ProjectEnvConfig>) => void;
   projectPath?: string;
+  projectId?: string; // Used to persist settings
   settings?: ProjectSettings;
   setSettings?: React.Dispatch<React.SetStateAction<ProjectSettings>>;
   isOpen?: boolean; // Dialog open state to trigger detection
@@ -80,6 +81,7 @@ export function SourceControlProjectSettings({
   envConfig,
   updateEnvConfig,
   projectPath,
+  projectId,
   settings,
   setSettings,
   isOpen
@@ -99,6 +101,7 @@ export function SourceControlProjectSettings({
   const [branches, setBranches] = useState<string[]>([]);
   const [isLoadingBranches, setIsLoadingBranches] = useState(false);
   const [branchesError, setBranchesError] = useState<string | null>(null);
+  const [currentBranch, setCurrentBranch] = useState<string | null>(null);
 
   // Manual mode state
   const [isManualMode, setIsManualMode] = useState(false);
@@ -106,8 +109,8 @@ export function SourceControlProjectSettings({
   const [manualOwner, setManualOwner] = useState('');
   const [manualRepo, setManualRepo] = useState('');
 
-  // Get current source control config
-  const sourceControl = envConfig?.sourceControl;
+  // Get current source control config from settings (persisted in project JSON)
+  const sourceControl = settings?.sourceControl;
 
   debugLog('Render', {
     projectPath,
@@ -117,6 +120,34 @@ export function SourceControlProjectSettings({
     isManualMode
   });
 
+  /**
+   * Update source control in settings and persist to backend
+   */
+  const updateSourceControl = async (newSourceControl: ProjectSourceControl | undefined) => {
+    debugLog('updateSourceControl called:', newSourceControl);
+
+    // Update local state
+    if (setSettings) {
+      setSettings(prev => ({ ...prev, sourceControl: newSourceControl }));
+    }
+
+    // Persist to backend
+    if (projectId) {
+      try {
+        const result = await window.electronAPI.updateProjectSettings(projectId, {
+          sourceControl: newSourceControl
+        });
+        if (!result.success) {
+          debugLog('Failed to persist sourceControl:', result.error);
+        } else {
+          debugLog('sourceControl persisted successfully');
+        }
+      } catch (err) {
+        debugLog('Error persisting sourceControl:', err);
+      }
+    }
+  };
+
   // Auto-detect git remote when dialog opens or project changes
   useEffect(() => {
     if (isOpen && projectPath && detectionStatus === 'idle') {
@@ -125,14 +156,15 @@ export function SourceControlProjectSettings({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, projectPath]);
 
-  // Check token when provider is detected/selected
+  // Check token when sourceControl is properly configured
+  // Only check when sourceControl has a valid provider (not just detectedRemote)
+  // This prevents the "token missing" warning from showing before sourceControl is initialized
   useEffect(() => {
-    const provider = sourceControl?.provider || detectedRemote?.provider;
-    if (provider && provider !== 'none') {
-      checkToken(provider);
+    if (sourceControl?.provider && sourceControl.provider !== 'none') {
+      checkToken(sourceControl.provider);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sourceControl?.provider, detectedRemote?.provider]);
+  }, [sourceControl?.provider]);
 
   // Fetch branches when source control is configured
   useEffect(() => {
@@ -180,7 +212,7 @@ export function SourceControlProjectSettings({
             }
           }
 
-          updateEnvConfig({ sourceControl: newSourceControl });
+          await updateSourceControl(newSourceControl);
         }
       } else if (result.success && !result.data) {
         setDetectionStatus('no_remote');
@@ -194,7 +226,7 @@ export function SourceControlProjectSettings({
       setDetectionStatus('error');
       setDetectionError(err instanceof Error ? err.message : t('sourceControlProject.errors.detectionFailed'));
     }
-  }, [projectPath, sourceControl, updateEnvConfig, t]);
+  }, [projectPath, sourceControl, updateSourceControl, t]);
 
   /**
    * Match GitLab instance URL with configured instances
@@ -218,16 +250,20 @@ export function SourceControlProjectSettings({
 
   /**
    * Check if token is available for the provider
+   * Uses the current sourceControl config to find the appropriate token
    */
   const checkToken = useCallback(async (provider: SourceControlProvider) => {
-    if (provider === 'none') {
+    if (provider === 'none' || !sourceControl) {
       setTokenStatus('missing');
       return;
     }
 
+    debugLog('checkToken called with provider:', provider);
+    debugLog('sourceControl state:', sourceControl);
     setTokenStatus('checking');
 
     try {
+      // Pass the current sourceControl config to get the right token
       const result = await window.electronAPI.getTokenForProject(sourceControl);
       debugLog('getTokenForProject result:', result);
 
@@ -268,21 +304,32 @@ export function SourceControlProjectSettings({
     setBranchesError(null);
 
     try {
-      const result = await window.electronAPI.getGitBranches(projectPath);
-      debugLog('getGitBranches result:', result);
+      // Fetch branches and current branch in parallel
+      const [branchesResult, currentBranchResult] = await Promise.all([
+        window.electronAPI.getGitBranches(projectPath),
+        window.electronAPI.getCurrentGitBranch(projectPath)
+      ]);
 
-      if (result.success && result.data) {
-        setBranches(result.data);
+      debugLog('getGitBranches result:', branchesResult);
+      debugLog('getCurrentBranch result:', currentBranchResult);
 
-        // Auto-detect default branch if not set
-        if (!settings?.mainBranch && !sourceControl?.branch) {
-          const detectResult = await window.electronAPI.detectMainBranch(projectPath);
-          if (detectResult.success && detectResult.data) {
-            handleBranchChange(detectResult.data);
-          }
-        }
+      if (branchesResult.success && branchesResult.data) {
+        setBranches(branchesResult.data);
       } else {
-        setBranchesError(result.error || t('sourceControlProject.errors.branchesFailed'));
+        setBranchesError(branchesResult.error || t('sourceControlProject.errors.branchesFailed'));
+      }
+
+      // Set current branch
+      if (currentBranchResult.success && currentBranchResult.data) {
+        setCurrentBranch(currentBranchResult.data);
+      }
+
+      // Auto-detect default branch if not set
+      if (!settings?.mainBranch && !sourceControl?.branch) {
+        const detectResult = await window.electronAPI.detectMainBranch(projectPath);
+        if (detectResult.success && detectResult.data) {
+          handleBranchChange(detectResult.data);
+        }
       }
     } catch (err) {
       debugLog('Branches error:', err);
@@ -295,44 +342,91 @@ export function SourceControlProjectSettings({
   /**
    * Handle branch selection change
    */
-  const handleBranchChange = (branch: string) => {
+  const handleBranchChange = async (branch: string) => {
     debugLog('Branch change:', branch);
 
-    // Update project settings
+    // Update project settings local state (mainBranch)
     if (setSettings) {
       setSettings(prev => ({ ...prev, mainBranch: branch }));
     }
 
-    // Update source control config
-    if (sourceControl) {
-      updateEnvConfig({
-        sourceControl: { ...sourceControl, branch }
-      });
+    // Persist mainBranch to backend if we have projectId
+    if (projectId) {
+      try {
+        const result = await window.electronAPI.updateProjectSettings(projectId, {
+          mainBranch: branch
+        });
+        if (!result.success) {
+          debugLog('Failed to persist mainBranch:', result.error);
+        } else {
+          debugLog('mainBranch persisted successfully');
+        }
+      } catch (err) {
+        debugLog('Error persisting mainBranch:', err);
+      }
     }
 
-    // Legacy support
-    updateEnvConfig({ defaultBranch: branch });
+    // Update source control config branch if sourceControl exists
+    if (sourceControl) {
+      await updateSourceControl({ ...sourceControl, branch });
+    }
   };
 
   /**
    * Toggle sync issues
    */
-  const handleToggleSyncIssues = (enabled: boolean) => {
+  const handleToggleSyncIssues = async (enabled: boolean) => {
+    debugLog('handleToggleSyncIssues called:', enabled);
+
+    // If sourceControl exists, update it
     if (sourceControl) {
-      updateEnvConfig({
-        sourceControl: { ...sourceControl, syncIssues: enabled }
-      });
+      const newSourceControl = { ...sourceControl, syncIssues: enabled };
+      debugLog('Updating sourceControl with syncIssues:', newSourceControl);
+      await updateSourceControl(newSourceControl);
+    } else if (detectedRemote) {
+      // Create sourceControl from detected remote if it doesn't exist
+      const newSourceControl: ProjectSourceControl = {
+        provider: detectedRemote.provider,
+        detectedRemoteUrl: detectedRemote.url,
+        owner: detectedRemote.owner,
+        repo: detectedRemote.repo,
+        syncIssues: enabled,
+        syncPullRequests: false,
+        autoDetectedAt: new Date().toISOString()
+      };
+      debugLog('Creating new sourceControl with syncIssues:', newSourceControl);
+      await updateSourceControl(newSourceControl);
+    } else {
+      debugLog('Cannot toggle syncIssues: no sourceControl or detectedRemote');
     }
   };
 
   /**
    * Toggle sync PRs/MRs
    */
-  const handleToggleSyncPRs = (enabled: boolean) => {
+  const handleToggleSyncPRs = async (enabled: boolean) => {
+    debugLog('handleToggleSyncPRs called:', enabled);
+
+    // If sourceControl exists, update it
     if (sourceControl) {
-      updateEnvConfig({
-        sourceControl: { ...sourceControl, syncPullRequests: enabled }
-      });
+      const newSourceControl = { ...sourceControl, syncPullRequests: enabled };
+      debugLog('Updating sourceControl with syncPullRequests:', newSourceControl);
+      await updateSourceControl(newSourceControl);
+    } else if (detectedRemote) {
+      // Create sourceControl from detected remote if it doesn't exist
+      const newSourceControl: ProjectSourceControl = {
+        provider: detectedRemote.provider,
+        detectedRemoteUrl: detectedRemote.url,
+        owner: detectedRemote.owner,
+        repo: detectedRemote.repo,
+        syncIssues: false,
+        syncPullRequests: enabled,
+        autoDetectedAt: new Date().toISOString()
+      };
+      debugLog('Creating new sourceControl with syncPullRequests:', newSourceControl);
+      await updateSourceControl(newSourceControl);
+    } else {
+      debugLog('Cannot toggle syncPullRequests: no sourceControl or detectedRemote');
     }
   };
 
@@ -372,7 +466,7 @@ export function SourceControlProjectSettings({
       }
     }
 
-    updateEnvConfig({ sourceControl: newSourceControl });
+    await updateSourceControl(newSourceControl);
     setIsManualMode(false);
   };
 
@@ -388,13 +482,11 @@ export function SourceControlProjectSettings({
   /**
    * Disconnect source control
    */
-  const handleDisconnect = () => {
-    updateEnvConfig({
-      sourceControl: {
-        provider: 'none',
-        syncIssues: false,
-        syncPullRequests: false
-      }
+  const handleDisconnect = async () => {
+    await updateSourceControl({
+      provider: 'none',
+      syncIssues: false,
+      syncPullRequests: false
     });
     setDetectedRemote(null);
     setDetectionStatus('idle');
@@ -477,6 +569,7 @@ export function SourceControlProjectSettings({
             <BranchSelector
               branches={branches}
               selectedBranch={settings?.mainBranch || sourceControl?.branch || ''}
+              currentBranch={currentBranch}
               isLoading={isLoadingBranches}
               error={branchesError}
               onSelect={handleBranchChange}
@@ -903,6 +996,7 @@ function SyncOptions({
 interface BranchSelectorProps {
   branches: string[];
   selectedBranch: string;
+  currentBranch: string | null;
   isLoading: boolean;
   error: string | null;
   onSelect: (branch: string) => void;
@@ -913,6 +1007,7 @@ interface BranchSelectorProps {
 function BranchSelector({
   branches,
   selectedBranch,
+  currentBranch,
   isLoading,
   error,
   onSelect,
@@ -927,7 +1022,7 @@ function BranchSelector({
   );
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
@@ -948,6 +1043,17 @@ function BranchSelector({
           <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
+
+      {/* Current branch info */}
+      {currentBranch && (
+        <div className="flex items-center gap-2 pl-6">
+          <span className="text-xs text-muted-foreground">{t('sourceControlProject.branch.currentBranch')}:</span>
+          <span className="text-xs font-medium text-foreground bg-muted px-2 py-0.5 rounded flex items-center gap-1">
+            <GitBranch className="h-3 w-3" />
+            {currentBranch}
+          </span>
+        </div>
+      )}
 
       {error && (
         <div className="flex items-center gap-2 text-xs text-destructive pl-6">

@@ -1,9 +1,19 @@
 {
-  "name": "auto-claude",
+  "name": "kali-auto-claude",
+  "productName": "KaliAutoCode",
   "version": "2.7.4",
-  "description": "Autonomous multi-agent coding framework powered by Claude AI",
+  "description": "Multi-workspace orchestrator with Claude Code integration and JIRA workflow automation",
   "license": "AGPL-3.0",
-  "author": "Auto Claude Team",
+  "author": {
+    "name": "Audrey",
+    "email": "ton-email@exemple.com"
+  },
+  "contributors": [
+    {
+      "name": "Auto Claude Team",
+      "url": "https://github.com/AndyMik90/Auto-Claude"
+    }
+  ],
   "workspaces": [
     "apps/*",
     "libs/*"
@@ -31,7 +41,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AndyMik90/Auto-Claude.git"
+    "url": "https://github.com/agharta83/Auto-Claude.git"
   },
   "keywords": [
     "ai",
@@ -39,7 +49,11 @@
     "autonomous",
     "coding",
     "agents",
-    "electron"
+    "electron",
+    "jira",
+    "gitlab",
+    "workflow",
+    "orchestrator"
   ],
   "devDependencies": {
     "jsdom": "^27.4.0"

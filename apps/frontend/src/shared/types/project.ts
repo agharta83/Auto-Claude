@@ -26,6 +26,8 @@ export interface ProjectSettings {
   mainBranch?: string;
   /** Include CLAUDE.md instructions in agent system prompt (default: true) */
   useClaudeMd?: boolean;
+  /** Source control configuration (GitHub/GitLab sync settings) */
+  sourceControl?: ProjectSourceControl;
 }
 
 export interface NotificationSettings {

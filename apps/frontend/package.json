@@ -1,18 +1,24 @@
 {
-  "name": "auto-claude-ui",
+"name": "kali-auto-claude-ui",
   "version": "2.7.4",
   "type": "module",
-  "description": "Desktop UI for Auto Claude autonomous coding framework",
-  "homepage": "https://github.com/AndyMik90/Auto-Claude",
+  "description": "Desktop UI for Kali Auto Code - Multi-workspace orchestrator with Claude Code integration",
+  "homepage": "https://github.com/agharta83/Auto-Claude",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AndyMik90/Auto-Claude.git"
+    "url": "https://github.com/agharta83/Auto-Claude.git"
   },
   "main": "./out/main/index.js",
   "author": {
-    "name": "Auto Claude Team",
-    "email": "119136210+AndyMik90@users.noreply.github.com"
+    "name": "Audrey",
+    "email": "ton-email@example.com"
   },
+  "contributors": [
+    {
+      "name": "Auto Claude Team",
+      "email": "119136210+AndyMik90@users.noreply.github.com"
+    }
+  ],
   "license": "AGPL-3.0",
   "engines": {
     "node": ">=24.0.0",
@@ -140,13 +146,13 @@
     "dmg-builder": "^26.0.12"
   },
   "build": {
-    "appId": "com.autoclaude.ui",
-    "productName": "Auto-Claude",
+    "appId": "com.agharta.kalicode",
+    "productName": "Kali-Auto-Code",
     "artifactName": "${productName}-${version}-${platform}-${arch}.${ext}",
     "publish": [
       {
         "provider": "github",
-        "owner": "AndyMik90",
+        "owner": "agharta83",
         "repo": "Auto-Claude"
       }
     ],

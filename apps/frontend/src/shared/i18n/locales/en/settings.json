@@ -334,19 +334,9 @@
       "integrationDescription": "Connect to Linear for issue tracking and task import",
       "syncDescription": "Sync with Linear for issue tracking"
     },
-    "github": {
-      "title": "GitHub",
-      "description": "GitHub issues sync",
-      "integrationTitle": "GitHub Integration",
-      "integrationDescription": "Connect to GitHub for issue tracking",
-      "syncDescription": "Sync with GitHub Issues"
-    },
-    "gitlab": {
-      "title": "GitLab",
-      "description": "GitLab issues sync",
-      "integrationTitle": "GitLab Integration",
-      "integrationDescription": "Connect to GitLab for issue tracking",
-      "syncDescription": "Sync with GitLab Issues"
+    "sourceControl": {
+      "title": "Source Control",
+      "description": "GitHub & GitLab integration"
     },
     "memory": {
       "title": "Memory",
@@ -584,7 +574,8 @@
       "search": "Search branches...",
       "noMatch": "No branches match your search",
       "noBranches": "No branches found",
-      "selectedNote": "Using {{branch}} as the default branch"
+      "selectedNote": "Using {{branch}} as the default branch",
+      "currentBranch": "Current branch"
     }
   },
   "debug": {
